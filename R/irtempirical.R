@@ -209,9 +209,10 @@ setMethod("plot",
 #' @keywords assumptions
 #' @export
 #' @examples
-psych::sim.rasch(nvar = 10,n = 1000, low=-3,high=3,d=NULL, a=1,mu=0,sd=1)
-psych::sim.irt(nvar = 10, n = 1000, low=-3, high=3,a=NULL,c=0,z=1,d=NULL,mu=0,sd=1,mod="logistic")
-psych::sim.poly(nvar = 10 ,n = 1000, low=-2,high=2,a=NULL,c=0,z=1,d=NULL, mu=0,sd=1,cat=5,mod="logistic") 
+#' sim_dichotomous<-data.frame(psych::sim.irt(nvar = 10, n = 1000, low=-3, high=3,a=NULL,c=0,z=1,d=NULL,mu=0,sd=1,mod="logistic")$items)
+#' sim_polytomous<-data.frame(psych::sim.poly(nvar = 10 ,n = 1000, low=-2,high=2,a=NULL,c=0,z=1,d=NULL, mu=0,sd=1,cat=5,mod="logistic")$items)
+#' irt_empirical_model(data=sim_dichotomous,items="V1")
+#' irt_empirical_model(data=sim_polytomous,items="V1")
 irt_empirical_model <- function(data = NULL, items = NULL,   addlogit = TRUE) {
   if (is.null(items)) {
     items <- names(data)
