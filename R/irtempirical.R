@@ -205,7 +205,6 @@ setMethod("plot",
 #' @param data 
 #' @param items 
 #' @param addlogit
-#' @importFrom 
 #' @keywords assumptions
 #' @export
 #' @examples
