@@ -15,9 +15,11 @@ irt_empirical_model(data = NULL, items = NULL, addlogit = TRUE)
 
 }
 \examples{
-sim_dichotomous<-data.frame(psych::sim.irt(nvar = 10, n = 1000, low=-3, high=3,a=NULL,c=0,z=1,d=NULL,mu=0,sd=1,mod="logistic")$items)
-sim_polytomous<-data.frame(psych::sim.poly(nvar = 10 ,n = 1000, low=-2,high=2,a=NULL,c=0,z=1,d=NULL, mu=0,sd=1,cat=5,mod="logistic")$items)
-irt_empirical_model(data=sim_dichotomous,items="V1")
-irt_empirical_model(data=sim_polytomous,items="V1")
+sim_dichotomous<-data.frame(psych::sim.irt(nvar=10,n=1000,low=-4,high=4,a=NULL,c=0,z=1,d=NULL,mu=0,sd=1,mod="logistic")$items)
+sim_polytomous<-data.frame(psych::sim.poly(nvar=10,n=1000,low=-4,high=4,a=NULL,c=0,z=1,d=NULL,mu=0,sd=1,cat=5,mod="logistic")$items)
+m1<-irt_empirical_model(data=sim_dichotomous,items=NULL)
+m2<-irt_empirical_model(data=sim_polytomous,items=NULL)
+plot(m1,type="ICC",xlim=c(-6,6),item="V2",draw.logit_method=0,add_score_axis=TRUE)
+plot(m2,type="ICC",xlim=c(-6,6),item="V2",draw.logit_method=0,add_score_axis=TRUE)
 }
 \keyword{assumptions}
