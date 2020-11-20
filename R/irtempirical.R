@@ -62,8 +62,7 @@ methods::setClass(
              scores_axis="vector",
              z_scores_axis="vector",
              items="character",
-             irts="list")
-)
+             irts="list"))
 ##########################################################################################
 #
 ##########################################################################################
@@ -83,11 +82,11 @@ setMethod("plot",
             irt_seclected<-NULL
             if (is.null(p_irts)){ stop(paste("canot find item",item)) }
             if (! is.null(option)){
-              option_irt=NULL;
+              option_irt=NULL
               for (irt in p_irts){
-                if (option==irt@option){
-                  option_plot_flag=TRUE;
-                  #p_irts=c(irt)
+                if (option==irt@option) {
+                  option_plot_flag=TRUE
+                  # p_irts=c(irt)
                   irt_seclected=irt;
                   break()
                 }
@@ -96,7 +95,7 @@ setMethod("plot",
                 stop(paste('canot find option:',option,'for item:',item))
               }
             }
-            if (length(p_irts)==0){
+            if (length(p_irts)==0) {
               return
             }
 
@@ -107,12 +106,12 @@ setMethod("plot",
               xlim<-c(x_min,x_max)
             }
 
-            if (option_plot_flag){
+            if (option_plot_flag) {
               plot_title<-paste(item,'option:',option)
             } else{
               plot_title<-paste(item)
             }
-            if (!is.null(main)){
+            if (!is.null(main)) {
               plot_title<-paste(main,':',plot_title)
             }
 
@@ -141,8 +140,7 @@ setMethod("plot",
             #   return()
             # }
 
-
-            if (is.null(ylim)){
+            if (is.null(ylim)) {
               ylim<-c(0,1.1)
             }
 
@@ -181,11 +179,11 @@ setMethod("plot",
                   lines(irt@x,irt@y1,col=color)
                 }
 
-                #Logistic regression
+                # Logistic regression
                 if (!is.null(irt@logit1) && !is.null(irt@logit2) && !is.null(irt@logit3) && draw.logit){
                   logit_x<-seq(xlim[1],xlim[2],.05)
 
-                  if (draw.logit_method==1){
+                  if (draw.logit_method==1) {
                     logit_y1<-predict(irt@logit1,list(x=logit_x),type="response");
                     logit_y=logit_y1
                   } else if (draw.logit_method==2){
@@ -202,19 +200,18 @@ setMethod("plot",
                   }
                   lines(logit_x,logit_y,col=colors2[ci])
 
-                  #information
-                  #color='pink'
-                  #if (draw.points){
+                  # information
+                  # color='pink'
+                  # if (draw.points){
                   #  points(irt@x,irt@information,col=color,pch=20)
-                  #}
-                  #if (draw.lines){
+                  # }
+                  # if (draw.lines){
                   #  lines(irt@x,irt@information,col=color)
-                  #}
-                }#/Logistic regression
+                  # } # Logistic regression
+                }
               }
               ci<-ci + 1
             }
-
             abline(v=0,col='gray2')
             txt<-if (! option_plot_flag) '' else paste('monotonicity:',round(irt_seclected@monotonicity,4))
             txt<-paste(txt,'nrow:',nrow(model@data))
@@ -245,11 +242,11 @@ irt_empirical_model<-function(data=NULL,items=NULL,addlogit=TRUE) {
   }
 
   sum_scores<-rowSums(data)
-  sum_scores_mean=mean(sum_scores)
-  sum_scores_sd=sd(sum_scores)
-  score_max=max(sum_scores)
-  score_min=min(sum_scores)
-  scores_range=seq(score_min,score_max,by=1)
+  sum_scores_mean<-mean(sum_scores)
+  sum_scores_sd<-sd(sum_scores)
+  score_max<-max(sum_scores)
+  score_min<-min(sum_scores)
+  scores_range<-seq(score_min,score_max,by=1)
   scores_z<-(scores_range - sum_scores_mean) / sum_scores_sd
 
   items_info<-list()
@@ -262,34 +259,28 @@ irt_empirical_model<-function(data=NULL,items=NULL,addlogit=TRUE) {
     for (i in seq(1,max,by=1)) {
       item_name<-paste(item,' option: ',i,sep='')
       v1<-tmp1
-      v1[v1 !=i]<-0
-
+      v1[v1!=i]<-0
       v2<-tmp1
-      v2[v2 <=i]<-0
-
+      v2[v2<=i]<-0
       v3<-tmp1
-      v3[v3 >=i]<-0
-
-      if (i==1){
+      v3[v3>=i]<-0
+      if (i==1) {
         position=1
-      } else if ( i==max){
+      } else if (i==max) {
         position=3
       } else {
         position=2
       }
-      irt<-new(
-        "EmpiricalIRT",
-        name=item_name,
-        x=scores_z,
-        item=item,
-        option=i,
-        position=position,
-        responses1=v1,
-        responses2=v2,
-        responses3=v3
-      )
+      irt<-new("EmpiricalIRT",
+               name=item_name,
+               x=scores_z,
+               item=item,
+               option=i,
+               position=position,
+               responses1=v1,
+               responses2=v2,
+               responses3=v3)
       irts_vector<-c(irts_vector,irt)
-      # }
     }
     items_info[[item]]<-irts_vector
   }
@@ -301,14 +292,11 @@ irt_empirical_model<-function(data=NULL,items=NULL,addlogit=TRUE) {
       cat(paste("SKIP ",j))
       next
     }
-    irts_ok=c()
-    #print(typeof(irts))
-    #print(head(irts))
+    irts_ok<-c()
+    # print(typeof(irts))
+    # print(head(irts))
     for (irt in irts){
-      probs1=c()
-      probs2=c()
-      probs3=c()
-      information=c()
+      probs1<-probs3<-probs2<-information<-c()
       for (i in score_min:score_max) {
         index1<-(sum_scores==i)
         my_responses1<-irt@responses1[index1] #simplirosis me sumscore==i
@@ -317,22 +305,22 @@ irt_empirical_model<-function(data=NULL,items=NULL,addlogit=TRUE) {
         prob1<-(length(my_responses1[my_responses1 > 0]) / length(my_responses1)) # gia to sigkekrimeno score i ti simpliro8ike sto item
         prob2<-(length(my_responses2[my_responses2 > 0]) / length(my_responses2)) # gia to sigkekrimeno score i ti simpliro8ike sto item
         prob3<-(length(my_responses3[my_responses3 > 0]) / length(my_responses3)) # gia to sigkekrimeno score i ti simpliro8ike sto item
-        #if (is.na(prob1)){ prob1=0; }
-        #if (is.na(prob2)){ prob2=0; }
+        # if (is.na(prob1)){ prob1=0; }
+        # if (is.na(prob2)){ prob2=0; }
         probs1<-c(probs1,prob1)
         probs2<-c(probs2,prob2)
         probs3<-c(probs3,prob3)
-        #print(prob1 * (1-prob1))
+        # print(prob1 * (1-prob1))
         information=c(information,(prob1 * (1-prob1)))
       }
-      #print(information)
-      #println('lens',length(irt@x),length(probs))
+      # print(information)
+      # println('lens',length(irt@x),length(probs))
       irt@y1<-probs1
       irt@y1_max<-max(probs1,na.rm=TRUE)
       irt@y2<-probs2
       irt@y3<-probs3
       irt@information<-information
-      #println('len1',irt@name,length(irt@y1),length(irt@y2))
+      # println('len1',irt@name,length(irt@y1),length(irt@y2))
       if (addlogit) {
         m_logit=glm(formula=y ~ x,
                     data=data.frame(y=probs1,x=scores_z),
@@ -368,9 +356,9 @@ irt_empirical_model<-function(data=NULL,items=NULL,addlogit=TRUE) {
         # print("3:")
         # print(probs3)
 
-        #mcor1<-cor(scores_z,probs1,method="spearman",use="pairwise.complete.obs")
-        #mcor2<-cor(scores_z,probs2,method="spearman",use="pairwise.complete.obs")
-        #mcor3<-cor(scores_z,probs3,method="spearman",use="pairwise.complete.obs")
+        # mcor1<-cor(scores_z,probs1,method="spearman",use="pairwise.complete.obs")
+        # mcor2<-cor(scores_z,probs2,method="spearman",use="pairwise.complete.obs")
+        # mcor3<-cor(scores_z,probs3,method="spearman",use="pairwise.complete.obs")
         mcor1<-cor(scores_z,probs1,method="spearman",use="pairwise")
         mcor2<-cor(scores_z,probs2,method="spearman",use="pairwise")
         mcor3<-cor(scores_z,probs3,method="spearman",use="pairwise")
@@ -382,7 +370,6 @@ irt_empirical_model<-function(data=NULL,items=NULL,addlogit=TRUE) {
         print(paste('cor4',mcor4))
         print('------------------------------------------------------')
       }
-
       irt@monotonicity<-mcor
       irts_ok<-c(irts_ok,irt)
     }
