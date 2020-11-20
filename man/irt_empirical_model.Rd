@@ -2,17 +2,12 @@
 % Please edit documentation in R/irtempirical.R
 \name{irt_empirical_model}
 \alias{irt_empirical_model}
-\title{}
+\title{compute empirical IRT}
 \usage{
 irt_empirical_model(data = NULL, items = NULL, addlogit = TRUE)
 }
-\arguments{
-\item{data}{}
-
-\item{items}{}
-}
 \description{
-
+compute empirical IRT
 }
 \examples{
 sim_dichotomous<-data.frame(psych::sim.irt(nvar=10,n=1000,low=-4,high=4,a=NULL,c=0,z=1,d=NULL,mu=0,sd=1,mod="logistic")$items)

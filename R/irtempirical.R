@@ -1,51 +1,80 @@
 ##########################################################################################
-# 
+#
 ##########################################################################################
-methods::setClass(
-  Class="EmpiricalIRT",
-  slots=list(
-    name="character",
-    item="character",
-    option="numeric",
-    position="numeric",#1:left 2:midle 3:right
-    x="numeric" ,#vector
-    y1="numeric",#vector
-    y1_max="numeric",
-    y2="numeric",#vector
-    y3="numeric",#vector
-    information="numeric",#vector
-    monotonicity="numeric",
-    logit1="ANY",# grm regression model
-    logit2="ANY",# grm regression model
-    logit3="ANY",# grm regression model
-    responses1="numeric",#vector
-    responses2="numeric",#vector
-    responses3="numeric" #vector
-  )
-)
+#' @slot name character
+#' @slot item character
+#' @slot option numeric
+#' @slot position numeric 1:left 2:middle 3:right
+#' @slot x numeric vector
+#' @slot y1 numeric vector
+#' @slot y1_max numeric
+#' @slot y2 numeric vector
+#' @slot y3 numeric vector
+#' @slot information numeric vector
+#' @slot monotonicity numeric
+#' @slot logit1 grm regression model
+#' @slot logit2 grm regression model
+#' @slot logit3 grm regression model
+#' @slot responses1 numeric vector
+#' @slot responses2 numeric vector
+#' @slot responses3 numeric vector
+#' @name EmpiricalIRT
+#' @rdname EmpiricalIRT
+#' @export
+methods::setClass(Class="EmpiricalIRT",
+                  slots=list(name="character",
+                             item="character",
+                             option="numeric",
+                             position="numeric",
+                             x="numeric",
+                             y1="numeric",
+                             y1_max="numeric",
+                             y2="numeric",
+                             y3="numeric",
+                             information="numeric",
+                             monotonicity="numeric",
+                             logit1="ANY",
+                             logit2="ANY",
+                             logit3="ANY",
+                             responses1="numeric",
+                             responses2="numeric",
+                             responses3="numeric"))
 ##########################################################################################
-# 
+#
 ##########################################################################################
+#' @slot data dataframe
+#' @slot sum_scores numeric
+#' @slot sum_scores_mean numeric
+#' @slot sum_scores_sd numeric
+#' @slot scores_axis numeric
+#' @slot z_scores_axis vector
+#' @slot items character
+#' @slot irts list
+#' @name EmpiricalIRTModel
+#' @rdname EmpiricalIRTModel
+#' @export
 methods::setClass(
   Class="EmpiricalIRTModel",
-  slots=list(
-    data="data.frame",
-    sum_scores="numeric",
-    sum_scores_mean="numeric",
-    sum_scores_sd="numeric",
-    scores_axis="vector",
-    z_scores_axis="vector",
-    items="character",
-    irts="list"
-  )
+  slots=list(data="data.frame",
+             sum_scores="numeric",
+             sum_scores_mean="numeric",
+             sum_scores_sd="numeric",
+             scores_axis="vector",
+             z_scores_axis="vector",
+             items="character",
+             irts="list")
 )
 ##########################################################################################
-# 
+#
 ##########################################################################################
+#' @name EmpiricalIRTModel
+#' @docType methods
+#' @rdname EmpiricalIRTModel
+#' @export
 setMethod("plot",
           "EmpiricalIRTModel",
           function(x,type="ICC",item,option=NULL,xlim=NULL,ylim=NULL,draw.points=TRUE,draw.lines=TRUE,draw.logit=TRUE,draw.logit_method=0,main=NULL,add_score_axis=FALSE,...) {
-            model<- x;
+            model<-x;
             option_plot_flag=FALSE
             if (is.null(item) || is.na(item)){
               stop("item expected")
@@ -56,7 +85,7 @@ setMethod("plot",
             if (! is.null(option)){
               option_irt=NULL;
               for (irt in p_irts){
-                if (option == irt@option){
+                if (option==irt@option){
                   option_plot_flag=TRUE;
                   #p_irts=c(irt)
                   irt_seclected=irt;
@@ -67,18 +96,17 @@ setMethod("plot",
                 stop(paste('canot find option:',option,'for item:',item))
               }
             }
-            if (length(p_irts) == 0){
+            if (length(p_irts)==0){
               return
             }
-            
+
             xlab='z-score'
             if (is.null(xlim)) {
               x_min<-min(model@z_scores_axis)
               x_max<-max(model@z_scores_axis)
               xlim<-c(x_min,x_max)
             }
-            
-            
+
             if (option_plot_flag){
               plot_title<-paste(item,'option:',option)
             } else{
@@ -87,9 +115,8 @@ setMethod("plot",
             if (!is.null(main)){
               plot_title<-paste(main,':',plot_title)
             }
-            
-            
-            # if (type == 'INF'){
+
+            # if (type=='INF'){
             #   if (is.null(irt_seclected)){
             #     stop('INF without option not supported');
             #   }
@@ -102,7 +129,7 @@ setMethod("plot",
             #     imax<-max(tmp)
             #     ylim<-c(imin,imax)
             #   }
-            #   graphics::plot(NA, xlab=xlab, ylab='information', main=plot_title, xlim=xlim, ylim=ylim,labels=xlabels,...  )
+            #   graphics::plot(NA,xlab=xlab,ylab='information',main=plot_title,xlim=xlim,ylim=ylim,labels=xlabels,...  )
             #   color='black'
             #   if (draw.points){
             #     points(irt@x,irt@information,col=color,pch=20)
@@ -113,23 +140,21 @@ setMethod("plot",
             #   grid()
             #   return()
             # }
-            
-            
+
+
             if (is.null(ylim)){
               ylim<-c(0,1.1)
             }
-            
+
             if (draw.logit && draw.logit_method > 0){
               plot_title<-paste(plot_title,'logit:',draw.logit_method)
             }
-            
-            graphics::plot(NA, xlab=xlab, ylab='probability', main=plot_title, xlim=xlim, ylim=ylim,...   )
+
+            graphics::plot(NA,xlab=xlab,ylab='probability',main=plot_title,xlim=xlim,ylim=ylim,...   )
             if (add_score_axis) {
               axis(1,at=model@z_scores_axis,labels=model@scores_axis,pos=1.1)
             }
-            
-            
-            
+
             if(option_plot_flag){
               colors2<-rep('red',times=length(p_irts))
               colors<-rep('black',times=length(p_irts))
@@ -142,13 +167,12 @@ setMethod("plot",
                 colors<-rep('black',times=length(p_irts))
               }
             }
-            
-            
+
             ci<-1
             len=length(p_irts)
             for (i in 1:len){
               irt<-p_irts[[i]]
-              if (! option_plot_flag || irt@option == option){
+              if (! option_plot_flag || irt@option==option){
                 color<-colors[ci]
                 if (draw.points){
                   points(irt@x,irt@y1,col=color,pch=20)
@@ -156,19 +180,18 @@ setMethod("plot",
                 if (draw.lines){
                   lines(irt@x,irt@y1,col=color)
                 }
-                
-                
+
                 #Logistic regression
                 if (!is.null(irt@logit1) && !is.null(irt@logit2) && !is.null(irt@logit3) && draw.logit){
                   logit_x<-seq(xlim[1],xlim[2],.05)
-                  
-                  if (draw.logit_method ==1){
+
+                  if (draw.logit_method==1){
                     logit_y1<-predict(irt@logit1,list(x=logit_x),type="response");
                     logit_y=logit_y1
-                  } else if (draw.logit_method ==2){
+                  } else if (draw.logit_method==2){
                     logit_y2<-predict(irt@logit2,list(x=logit_x),type="response");
                     logit_y=logit_y2
-                  } else if (draw.logit_method ==3){
+                  } else if (draw.logit_method==3){
                     logit_y3<-predict(irt@logit3,list(x=logit_x),type="response");
                     logit_y=logit_y3
                   }else {
@@ -178,7 +201,7 @@ setMethod("plot",
                     logit_y=logit_y0
                   }
                   lines(logit_x,logit_y,col=colors2[ci])
-                  
+
                   #information
                   #color='pink'
                   #if (draw.points){
@@ -189,9 +212,9 @@ setMethod("plot",
                   #}
                 }#/Logistic regression
               }
-              ci <-ci + 1
+              ci<-ci + 1
             }
-            
+
             abline(v=0,col='gray2')
             txt<-if (! option_plot_flag) '' else paste('monotonicity:',round(irt_seclected@monotonicity,4))
             txt<-paste(txt,'nrow:',nrow(model@data))
@@ -199,11 +222,11 @@ setMethod("plot",
             grid()
           })
 ##########################################################################################
-# 
+#
 ##########################################################################################
-#' @title 
-#' @param data 
-#' @param items 
+#' @title compute empirical IRT
+#' @param data
+#' @param items
 #' @param addlogit
 #' @keywords assumptions
 #' @export
@@ -214,13 +237,13 @@ setMethod("plot",
 #' m2<-irt_empirical_model(data=sim_polytomous,items=NULL)
 #' plot(m1,type="ICC",xlim=c(-6,6),item="V2",draw.logit_method=0,add_score_axis=TRUE)
 #' plot(m2,type="ICC",xlim=c(-6,6),item="V2",draw.logit_method=0,add_score_axis=TRUE)
-irt_empirical_model<-function(data=NULL,items=NULL,  addlogit=TRUE) {
+irt_empirical_model<-function(data=NULL,items=NULL,addlogit=TRUE) {
   if (is.null(items)) {
     items<-names(data)
   } else {
     data<-data[items]
   }
-  
+
   sum_scores<-rowSums(data)
   sum_scores_mean=mean(sum_scores)
   sum_scores_sd=sd(sum_scores)
@@ -228,7 +251,7 @@ irt_empirical_model<-function(data=NULL,items=NULL,  addlogit=TRUE) {
   score_min=min(sum_scores)
   scores_range=seq(score_min,score_max,by=1)
   scores_z<-(scores_range - sum_scores_mean) / sum_scores_sd
-  
+
   items_info<-list()
   for (item in items) {
     tmp1=data[[item]]
@@ -237,22 +260,22 @@ irt_empirical_model<-function(data=NULL,items=NULL,  addlogit=TRUE) {
     len<-length(unique(tmp1))
     irts_vector<-list()
     for (i in seq(1,max,by=1)) {
-      item_name<-paste(item,' option: ',i, sep='')
+      item_name<-paste(item,' option: ',i,sep='')
       v1<-tmp1
-      v1[v1 != i]<-0
-      
-      v2<-tmp1
-      v2[v2 <= i]<-0
-      
-      v3<-tmp1
-      v3[v3 >= i]<-0
+      v1[v1 !=i]<-0
 
-      if (i == 1){
+      v2<-tmp1
+      v2[v2 <=i]<-0
+
+      v3<-tmp1
+      v3[v3 >=i]<-0
+
+      if (i==1){
         position=1
-      } else if ( i == max){
+      } else if ( i==max){
         position=3
       } else {
-        position =2
+        position=2
       }
       irt<-new(
         "EmpiricalIRT",
@@ -268,7 +291,6 @@ irt_empirical_model<-function(data=NULL,items=NULL,  addlogit=TRUE) {
       irts_vector<-c(irts_vector,irt)
       # }
     }
-    
     items_info[[item]]<-irts_vector
   }
 
@@ -286,12 +308,12 @@ irt_empirical_model<-function(data=NULL,items=NULL,  addlogit=TRUE) {
       probs1=c()
       probs2=c()
       probs3=c()
-      information =c()
+      information=c()
       for (i in score_min:score_max) {
-        index1 <-(sum_scores == i)
-        my_responses1<-irt@responses1[index1] #simplirosis me sumscore == i
-        my_responses2<-irt@responses2[index1] #simplirosis me sumscore == i
-        my_responses3<-irt@responses3[index1] #simplirosis me sumscore == i
+        index1<-(sum_scores==i)
+        my_responses1<-irt@responses1[index1] #simplirosis me sumscore==i
+        my_responses2<-irt@responses2[index1] #simplirosis me sumscore==i
+        my_responses3<-irt@responses3[index1] #simplirosis me sumscore==i
         prob1<-(length(my_responses1[my_responses1 > 0]) / length(my_responses1)) # gia to sigkekrimeno score i ti simpliro8ike sto item
         prob2<-(length(my_responses2[my_responses2 > 0]) / length(my_responses2)) # gia to sigkekrimeno score i ti simpliro8ike sto item
         prob3<-(length(my_responses3[my_responses3 > 0]) / length(my_responses3)) # gia to sigkekrimeno score i ti simpliro8ike sto item
@@ -302,7 +324,6 @@ irt_empirical_model<-function(data=NULL,items=NULL,  addlogit=TRUE) {
         probs3<-c(probs3,prob3)
         #print(prob1 * (1-prob1))
         information=c(information,(prob1 * (1-prob1)))
-        
       }
       #print(information)
       #println('lens',length(irt@x),length(probs))
@@ -313,40 +334,31 @@ irt_empirical_model<-function(data=NULL,items=NULL,  addlogit=TRUE) {
       irt@information<-information
       #println('len1',irt@name,length(irt@y1),length(irt@y2))
       if (addlogit) {
-        m_logit=glm(
-          formula=y ~ x,
-          data=data.frame(y=probs1,x=scores_z),
-          family=quasibinomial
-        )
+        m_logit=glm(formula=y ~ x,
+                    data=data.frame(y=probs1,x=scores_z),
+                    family=quasibinomial)
         irt@logit1=m_logit
-        
-        m_logit=glm(
-          formula=y ~ x,
-          data=data.frame(y=probs2,x=scores_z),
-          family=quasibinomial
-        )
+
+        m_logit=glm(formula=y ~ x,
+                    data=data.frame(y=probs2,x=scores_z),
+                    family=quasibinomial)
         irt@logit2=m_logit
-        
-        m_logit=glm(
-          formula=y ~ x,
-          data=data.frame(y=probs3,x=scores_z),
-          family=quasibinomial
-        )
+
+        m_logit=glm(formula=y ~ x,
+                    data=data.frame(y=probs3,x=scores_z),
+                    family=quasibinomial)
         irt@logit3=m_logit
-        
-        
       }
-      
-      
-      mcor2<-if (all(probs2 == 0 | is.na(probs2)))  NA else cor(scores_z,probs2, method="spearman",use="pairwise")
-      mcor3<-if (all(probs3 == 0 | is.na(probs3)))  NA else cor(scores_z,probs3, method="spearman",use="pairwise")
+
+      mcor2<-if (all(probs2==0 | is.na(probs2)))  NA else cor(scores_z,probs2,method="spearman",use="pairwise")
+      mcor3<-if (all(probs3==0 | is.na(probs3)))  NA else cor(scores_z,probs3,method="spearman",use="pairwise")
       if (! is.na(mcor2) && ! is.na(mcor3)){
         mcor<-(abs(mcor2) + abs(mcor3))/2
       } else {
-        mcor<-cor(scores_z,probs1, method="spearman",use="pairwise")
+        mcor<-cor(scores_z,probs1,method="spearman",use="pairwise")
       }
-      
-      if (FALSE && irt@item == 'Pers_obedient'){
+
+      if (FALSE && irt@item=='Pers_obedient'){
         print('------------------------------------------------------')
         print(irt@name)
         # print("1:")
@@ -355,39 +367,38 @@ irt_empirical_model<-function(data=NULL,items=NULL,  addlogit=TRUE) {
         # print(probs2)
         # print("3:")
         # print(probs3)
-        
-        #mcor1<-cor(scores_z,probs1, method="spearman",use="pairwise.complete.obs")
-        #mcor2<-cor(scores_z,probs2, method="spearman",use="pairwise.complete.obs")
-        #mcor3<-cor(scores_z,probs3, method="spearman",use="pairwise.complete.obs")
-        mcor1<-cor(scores_z,probs1, method="spearman",use="pairwise")
-        mcor2<-cor(scores_z,probs2, method="spearman",use="pairwise")
-        mcor3<-cor(scores_z,probs3, method="spearman",use="pairwise")
+
+        #mcor1<-cor(scores_z,probs1,method="spearman",use="pairwise.complete.obs")
+        #mcor2<-cor(scores_z,probs2,method="spearman",use="pairwise.complete.obs")
+        #mcor3<-cor(scores_z,probs3,method="spearman",use="pairwise.complete.obs")
+        mcor1<-cor(scores_z,probs1,method="spearman",use="pairwise")
+        mcor2<-cor(scores_z,probs2,method="spearman",use="pairwise")
+        mcor3<-cor(scores_z,probs3,method="spearman",use="pairwise")
         mcor4<-(abs(mcor2) + abs(mcor3))/2
-        
+
         print(paste('cor1',mcor1))
         print(paste('cor2',mcor2))
         print(paste('cor3',mcor3))
         print(paste('cor4',mcor4))
         print('------------------------------------------------------')
       }
-      
-      irt@monotonicity <-mcor
+
+      irt@monotonicity<-mcor
       irts_ok<-c(irts_ok,irt)
     }
     items_info[[j]]<-irts_ok
   }
-  
+
   my_model<-new("EmpiricalIRTModel",
-                  data=data,
-                  sum_scores=sum_scores,
-                  sum_scores_mean=sum_scores_mean,
-                  sum_scores_sd=sum_scores_sd,
-                  z_scores_axis=scores_z,
-                  scores_axis=scores_range,
-                  items=items,
-                  irts=items_info
-  )
-  
+                data=data,
+                sum_scores=sum_scores,
+                sum_scores_mean=sum_scores_mean,
+                sum_scores_sd=sum_scores_sd,
+                z_scores_axis=scores_z,
+                scores_axis=scores_range,
+                items=items,
+                irts=items_info)
+
   # for (item in my_model@items){
   #   #println('t1',item)
   #   irts<-my_model@irts[[item]]
@@ -396,6 +407,4 @@ irt_empirical_model<-function(data=NULL,items=NULL,  addlogit=TRUE) {
   #   }
   # }
   return(my_model)
-  
 }
-
