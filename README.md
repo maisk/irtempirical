@@ -13,4 +13,5 @@ install_github("maisk/irtempirical")
 # Usage
 
 library(irtempirical)
+
 ?irtempirical
