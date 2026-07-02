@@ -7,8 +7,15 @@
 .rs.restartR()
 library(devtools)
 library(roxygen2)
-setwd("/mnt/WDRED_REMOTE/repositories/irtempirical/")
+directory <- paste0(dirname(rstudioapi::getActiveDocumentContext()$path), "/")
+setwd(directory)
 # usethis::create_package("irtempirical")
 document()
 install()
 
+library(irtempirical)
+help(package = "irtempirical")
+
+pkgdown::build_site(paste0(getwd()))
+system("R CMD Rd2pdf rwf --force")
+system("R CMD build rwf --resave-data")
