@@ -55,26 +55,217 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-
 <div class="section level1">
 <div class="page-header"><h1 id="irtempirical">irtempirical<a class="anchor" aria-label="anchor" href="#irtempirical"></a>
 </h1></div>
-<p>IRT regression model</p>
+<p>An R package for <strong>empirical (nonparametric) Item Response Theory</strong> analysis.</p>
+<p>Instead of fitting a parametric IRT model (1PL/2PL/3PL, GRM, etc.) and assuming a specific mathematical form for the item response function, <code>irtempirical</code> estimates each item’s characteristic curve <strong>directly from the data</strong>: respondents are grouped by their observed total (sum) score, and the probability of endorsing each response option is simply the proportion of respondents in that score group who did. This is the same idea behind classic nonparametric IRT tools (e.g. Ramsay’s TestGraf / kernel-smoothed ICCs), traded here for a very lightweight, dependency-free implementation based on binning + optional logistic smoothing.</p>
+<p>It works for both dichotomous (0/1) and polytomous (ordinal, e.g. Likert) items.</p>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h2>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://devtools.r-lib.org/" class="external-link">devtools</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://devtools.r-lib.org/reference/install-deprecated.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"maisk/irtempirical"</span><span class="op">)</span></span></code></pre></div>
 </div>
-<div class="section level1">
-<h1 id="installation-instructions">Installation Instructions<a class="anchor" aria-label="anchor" href="#installation-instructions"></a>
-</h1>
-<p>install.packages(“devtools”)</p>
-<p>library(devtools)</p>
-<p>install_github(“maisk/irtempirical”)</p>
+<div class="section level2">
+<h2 id="quick-start">Quick start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
+</h2>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">irtempirical</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">sim_dichotomous</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="fu">psych</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/psych/man/sim.irt.html" class="external-link">sim.irt</a></span><span class="op">(</span></span>
+<span>  nvar <span class="op">=</span> <span class="fl">10</span>, n <span class="op">=</span> <span class="fl">1000</span>, low <span class="op">=</span> <span class="op">-</span><span class="fl">4</span>, high <span class="op">=</span> <span class="fl">4</span>,</span>
+<span>  a <span class="op">=</span> <span class="cn">NULL</span>, c <span class="op">=</span> <span class="fl">0</span>, z <span class="op">=</span> <span class="fl">1</span>, d <span class="op">=</span> <span class="cn">NULL</span>, mu <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  mod <span class="op">=</span> <span class="st">"logistic"</span></span>
+<span><span class="op">)</span><span class="op">$</span><span class="va">items</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">sim_polytomous</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="fu">psych</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/psych/man/sim.irt.html" class="external-link">sim.poly</a></span><span class="op">(</span></span>
+<span>  nvar <span class="op">=</span> <span class="fl">10</span>, n <span class="op">=</span> <span class="fl">1000</span>, low <span class="op">=</span> <span class="op">-</span><span class="fl">4</span>, high <span class="op">=</span> <span class="fl">4</span>,</span>
+<span>  a <span class="op">=</span> <span class="cn">NULL</span>, c <span class="op">=</span> <span class="fl">0</span>, z <span class="op">=</span> <span class="fl">1</span>, d <span class="op">=</span> <span class="cn">NULL</span>, mu <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  cat <span class="op">=</span> <span class="fl">5</span>, mod <span class="op">=</span> <span class="st">"logistic"</span></span>
+<span><span class="op">)</span><span class="op">$</span><span class="va">items</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">m1</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/irt_empirical_model.html">irt_empirical_model</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">sim_dichotomous</span>, items <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span><span class="va">m2</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/irt_empirical_model.html">irt_empirical_model</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">sim_polytomous</span>, items <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">m1</span>, type <span class="op">=</span> <span class="st">"ICC"</span>, xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">6</span>, <span class="fl">6</span><span class="op">)</span>, item <span class="op">=</span> <span class="st">"V2"</span>,</span>
+<span>     draw.logit_method <span class="op">=</span> <span class="fl">0</span>, add_score_axis <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">m2</span>, type <span class="op">=</span> <span class="st">"ICC"</span>, xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">6</span>, <span class="fl">6</span><span class="op">)</span>, item <span class="op">=</span> <span class="st">"V2"</span>,</span>
+<span>     draw.logit_method <span class="op">=</span> <span class="fl">0</span>, add_score_axis <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 </div>
-<div class="section level1">
-<h1 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
-</h1>
-<p>library(irtempirical)</p>
-<p>?irtempirical</p>
+<div class="section level2">
+<h2 id="how-it-works">How it works<a class="anchor" aria-label="anchor" href="#how-it-works"></a>
+</h2>
+<p>Given a <code>data.frame</code> of item responses (one column per item, one row per respondent):</p>
+<ol style="list-style-type: decimal">
+<li><p><strong>Total score &amp; z-score axis.</strong> The row sum score is computed for every respondent (<code>sum_scores</code>). Its mean/SD are used to convert every <em>possible</em> integer score in the observed range into a z-score — this z-score axis (<code>scores_axis</code> / <code>z_scores_axis</code>) stands in for the latent trait (theta) on the x-axis of every plot.</p></li>
+<li>
+<p><strong>Per-item, per-option response vectors.</strong> For each item and each response option <code>i</code> (1..max), three indicator vectors are built:</p>
+<ul>
+<li>
+<code>responses1</code>: 1 for respondents who chose exactly option <code>i</code>
+</li>
+<li>
+<code>responses2</code>: 1 for respondents who chose <em>more than</em> <code>i</code>
+</li>
+<li>
+<code>responses3</code>: 1 for respondents who chose <em>less than</em> <code>i</code>
+</li>
+</ul>
+<p>Each option gets an <code>EmpiricalIRT</code> object and also records its <code>position</code> on the option scale (<code>1</code> = first/left, <code>2</code> = middle, <code>3</code> = last/right).</p>
+</li>
+<li><p><strong>Empirical probabilities.</strong> Respondents are grouped by their exact total score. Within each score group, the proportion who satisfy each of the three response vectors above becomes one point of the empirical curve (<code>y1</code>, <code>y2</code>, <code>y3</code> — one probability per possible total score). <code>y1</code> is the empirical item/option characteristic curve; <code>y2</code>/<code>y3</code> describe how much probability mass sits above/below that option (used for polytomous items and for smoothing thresholds). Point-wise Bernoulli “information” (<code>p * (1 - p)</code>) is also stored per score group.</p></li>
+<li><p><strong>Optional logistic smoothing (<code>addlogit = TRUE</code>).</strong> A quasibinomial GLM (<code>y ~ x</code>) is fit through each of <code>y1</code>, <code>y2</code>, <code>y3</code> against the z-score axis, giving smoothed curves <code>logit1</code>, <code>logit2</code>, <code>logit3</code> that can be overlaid on the raw empirical points.</p></li>
+<li><p><strong>Monotonicity.</strong> A single monotonicity index per option is computed as the average absolute Spearman correlation between the z-score axis and <code>y2</code>/<code>y3</code> (falling back to the correlation with <code>y1</code> when one of those is degenerate, e.g. all zero). Well-behaved items should show monotonically increasing/decreasing option curves along the trait axis; this index is a quick numeric check of that.</p></li>
+</ol>
+<p>The result is an <code>EmpiricalIRTModel</code> object: it holds the original data, the score/z-score axes, and a named list (<code>irts</code>) mapping each item name to the list of its per-option <code>EmpiricalIRT</code> results.</p>
 </div>
-
+<div class="section level2">
+<h2 id="api">API<a class="anchor" aria-label="anchor" href="#api"></a>
+</h2>
+<div class="section level3">
+<h3 id="irt_empirical_modeldata-items--null-addlogit--true">
+<code>irt_empirical_model(data, items = NULL, addlogit = TRUE)</code><a class="anchor" aria-label="anchor" href="#irt_empirical_modeldata-items--null-addlogit--true"></a>
+</h3>
+<p>Computes the empirical IRT model described above.</p>
+<table class="table">
+<colgroup>
+<col width="50%">
+<col width="50%">
+</colgroup>
+<thead><tr>
+<th>Argument</th>
+<th>Meaning</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>data</code></td>
+<td>
+<code>data.frame</code> of item responses, one column per item</td>
+</tr>
+<tr>
+<td><code>items</code></td>
+<td>character vector of column names to include; <code>NULL</code> = all columns</td>
+</tr>
+<tr>
+<td><code>addlogit</code></td>
+<td>whether to fit the quasibinomial logistic smoothing curves</td>
+</tr>
+</tbody>
+</table>
+<p>Returns an <code>EmpiricalIRTModel</code> (S4).</p>
+</div>
+<div class="section level3">
+<h3 id="plotx-type--icc-item-option--null-">
+<code>plot(x, type = "ICC", item, option = NULL, ...)</code><a class="anchor" aria-label="anchor" href="#plotx-type--icc-item-option--null-"></a>
+</h3>
+<p>S4 <code>plot</code> method for <code>EmpiricalIRTModel</code>. Draws the empirical item/option characteristic curve(s) for one item.</p>
+<table class="table">
+<colgroup>
+<col width="50%">
+<col width="50%">
+</colgroup>
+<thead><tr>
+<th>Argument</th>
+<th>Meaning</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>x</code></td>
+<td>an <code>EmpiricalIRTModel</code>
+</td>
+</tr>
+<tr>
+<td><code>item</code></td>
+<td>item (column) name to plot — required</td>
+</tr>
+<tr>
+<td><code>option</code></td>
+<td>restrict the plot to a single response option; <code>NULL</code> plots all options for the item, each in its own color</td>
+</tr>
+<tr>
+<td>
+<code>xlim</code>, <code>ylim</code>
+</td>
+<td>axis limits; default <code>ylim = c(0, 1.1)</code>
+</td>
+</tr>
+<tr>
+<td><code>draw.points</code></td>
+<td>plot the raw empirical probability points</td>
+</tr>
+<tr>
+<td><code>draw.lines</code></td>
+<td>connect the raw empirical points</td>
+</tr>
+<tr>
+<td><code>draw.logit</code></td>
+<td>overlay the smoothed logistic curve</td>
+</tr>
+<tr>
+<td><code>draw.logit_method</code></td>
+<td>which smoothed curve to draw: <code>0</code> = the “exactly this option” curve derived from <code>1 - logit2 - logit3</code>, <code>1</code>/<code>2</code>/<code>3</code> = <code>logit1</code>/<code>logit2</code>/<code>logit3</code> directly</td>
+</tr>
+<tr>
+<td><code>add_score_axis</code></td>
+<td>add a secondary axis showing raw total scores under the z-score axis</td>
+</tr>
+<tr>
+<td><code>main</code></td>
+<td>optional title prefix</td>
+</tr>
+</tbody>
+</table>
+<p>When <code>option</code> is given, the monotonicity index for that option is printed in the plot’s top-right margin, along with the sample size.</p>
+</div>
+<div class="section level3">
+<h3 id="s4-classes">S4 classes<a class="anchor" aria-label="anchor" href="#s4-classes"></a>
+</h3>
+<ul>
+<li>
+<strong><code>EmpiricalIRT</code></strong> — one response option of one item: its empirical curve points (<code>x</code>, <code>y1</code>, <code>y2</code>, <code>y3</code>), fitted logit models (<code>logit1/2/3</code>), <code>information</code>, and <code>monotonicity</code>.</li>
+<li>
+<strong><code>EmpiricalIRTModel</code></strong> — the whole fitted model: original <code>data</code>, score/z-score axes, <code>items</code>, and <code>irts</code> (item name → list of <code>EmpiricalIRT</code>).</li>
+</ul>
+</div>
+</div>
+<div class="section level2">
+<h2 id="package-layout">Package layout<a class="anchor" aria-label="anchor" href="#package-layout"></a>
+</h2>
+<pre class="text"><code><span><span class="va">DESCRIPTION</span>           <span class="co"># package metadata (title/description currently blank)</span></span>
+<span><span class="va">NAMESPACE</span>             <span class="co"># exports: irt_empirical_model, EmpiricalIRT, EmpiricalIRTModel, plot method</span></span>
+<span><span class="va">R</span><span class="op">/</span><span class="va">irtempirical.R</span>      <span class="co"># all source: S4 classes, plot method, irt_empirical_model()</span></span>
+<span><span class="va">man</span><span class="op">/</span>                  <span class="co"># Rd help files generated by roxygen2 from R/irtempirical.R</span></span>
+<span><span class="va">docs</span><span class="op">/</span>                 <span class="co"># pkgdown-generated static site (do not hand-edit; regenerate instead)</span></span>
+<span><span class="va">generate_package.R</span>    <span class="co"># developer script: document(), install(), pkgdown::build_site(), R CMD build/check</span></span></code></pre>
+</div>
+<div class="section level2">
+<h2 id="development">Development<a class="anchor" aria-label="anchor" href="#development"></a>
+</h2>
+<p><code>generate_package.R</code> is the maintainer workflow script (run from RStudio, not part of the package itself):</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://devtools.r-lib.org/" class="external-link">devtools</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://roxygen2.r-lib.org/" class="external-link">roxygen2</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://devtools.r-lib.org/reference/document.html" class="external-link">document</a></span><span class="op">(</span><span class="op">)</span>                          <span class="co"># regenerate NAMESPACE/man from roxygen comments</span></span>
+<span><span class="fu"><a href="https://devtools.r-lib.org/reference/install.html" class="external-link">install</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu">pkgdown</span><span class="fu">::</span><span class="fu"><a href="https://pkgdown.r-lib.org/reference/build_site.html" class="external-link">build_site</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/getwd.html" class="external-link">getwd</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>        <span class="co"># regenerate docs/</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/system.html" class="external-link">system</a></span><span class="op">(</span><span class="st">"R CMD Rd2pdf irtempirical --force"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/system.html" class="external-link">system</a></span><span class="op">(</span><span class="st">"R CMD build irtempirical --resave-data"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="status--known-gaps">Status / known gaps<a class="anchor" aria-label="anchor" href="#status--known-gaps"></a>
+</h2>
+<ul>
+<li>
+<code>DESCRIPTION</code>’s <code>Title</code> and <code>Description</code> fields are empty.</li>
+<li>The <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> method has a dead/commented-out <code>type == "INF"</code> branch for plotting item information curves — not currently reachable.</li>
+<li>No automated tests.</li>
+</ul>
+</div>
+</div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

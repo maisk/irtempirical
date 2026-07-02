@@ -232,10 +232,58 @@ setMethod(
 ##########################################################################################
 #
 ##########################################################################################
-#' @title compute empirical IRT
-#' @param data
-#' @param items
-#' @param addlogit
+#' @title Compute an empirical (nonparametric) IRT model
+#' @description
+#' Estimates item (and, for polytomous items, response-option) characteristic
+#' curves directly from raw response data, without assuming a parametric IRT
+#' form (1PL/2PL/3PL, GRM, ...). Respondents are grouped by their observed
+#' total (sum) score, which stands in for the latent trait, and for each item
+#' option the probability of endorsement is simply the empirical proportion
+#' of respondents in that score group who endorsed it. A quasibinomial
+#' logistic curve can optionally be fit through those empirical points as a
+#' smoothed approximation, and a monotonicity index is computed per option as
+#' a quick diagnostic of how well its endorsement probability tracks the
+#' trait axis.
+#'
+#' For each item, every response option \code{i} (\code{1..max(item)}) gets
+#' its own \code{\linkS4class{EmpiricalIRT}} entry holding three empirical
+#' curves computed from three indicator vectors: exactly option \code{i}
+#' (\code{responses1}), more than \code{i} (\code{responses2}), and less than
+#' \code{i} (\code{responses3}). For dichotomous (0/1) items there is a
+#' single option (\code{i = 1}) and only \code{responses1}/\code{y1} is
+#' meaningful.
+#' @param data A \code{data.frame} of item responses: one column per item,
+#'   one row per respondent. Values must be numeric (dichotomous 0/1 or
+#'   polytomous 1..k). Used to compute total scores and, per item, the
+#'   empirical response-option curves.
+#' @param items Character vector of column names in \code{data} to include
+#'   in the model. If \code{NULL} (the default), every column of \code{data}
+#'   is used.
+#' @param addlogit Logical. If \code{TRUE} (the default), fit a quasibinomial
+#'   GLM (\code{y ~ x}, \code{family = quasibinomial}) through each of the
+#'   three empirical curves (\code{y1}, \code{y2}, \code{y3}) against the
+#'   z-score axis, so that a smoothed curve can be overlaid on the raw
+#'   empirical points when plotting. If \code{FALSE}, curve fitting is
+#'   skipped and the resulting \code{logit1}/\code{logit2}/\code{logit3}
+#'   slots stay \code{NULL}.
+#' @return An S4 \code{\linkS4class{EmpiricalIRTModel}} object with slots:
+#'   \describe{
+#'     \item{\code{data}}{the (possibly subset-by-\code{items}) input data}
+#'     \item{\code{sum_scores}}{total score per respondent (row sum of \code{data})}
+#'     \item{\code{sum_scores_mean}, \code{sum_scores_sd}}{mean and SD of \code{sum_scores}}
+#'     \item{\code{scores_axis}}{every integer total score from the observed
+#'       minimum to maximum, i.e. the x-axis in raw score units}
+#'     \item{\code{z_scores_axis}}{\code{scores_axis} standardized to
+#'       z-scores using \code{sum_scores_mean}/\code{sum_scores_sd}; this is
+#'       the x-axis used for plotting and for the logistic fits}
+#'     \item{\code{items}}{names of the items included in the model}
+#'     \item{\code{irts}}{a named list, keyed by item name, of lists of
+#'       \code{\linkS4class{EmpiricalIRT}} objects (one per response option
+#'       of that item) — this holds all of the actual curve data described
+#'       above}
+#'   }
+#'   Use \code{plot(model, item = ..., ...)} to visualize the item/option
+#'   characteristic curves of the returned model.
 #' @keywords assumptions
 #' @export
 #' @examples
