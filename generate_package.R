@@ -16,6 +16,7 @@ install()
 library(irtempirical)
 help(package = "irtempirical")
 
-pkgdown::build_site(paste0(getwd()))
+pkgdown::build_site(getwd())
+file.create(file.path(getwd(), "docs", ".nojekyll")) # pkgdown clears docs/ on every build; GitHub Pages needs this to skip Jekyll processing
 system("R CMD Rd2pdf irtempirical --force")
 system("R CMD build irtempirical --resave-data")

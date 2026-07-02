@@ -5,7 +5,9 @@ Authors@R: person("Dimitrios", "Zacharatos", email = "dimitrios@psycholate.com",
 Author: Kostas Maistrelis [aut,cre]
 	Dimitrios Zacharatos [aut,cre]
 Maintainer: Dimitrios Zacharatos <dimitrios@psycholate.com>
-Description: 
+URL: https://github.com/maisk/irtempirical, https://maisk.github.io/irtempirical/
+BugReports: https://github.com/maisk/irtempirical/issues
+Description:
 Depends: magrittr
 License: GPL (>= 2) + file LICENSE
 Encoding: UTF-8
