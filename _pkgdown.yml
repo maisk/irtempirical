@@ -7,7 +7,7 @@ template:
 code:
   width: 200
 
-destination: ../docs
+destination: /docs
 
 navbar:
   structure:
