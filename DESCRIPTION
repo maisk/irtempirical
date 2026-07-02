@@ -1,10 +1,10 @@
 Package: irtempirical
 Title: 
 Version: 0.0.0.9000
-Authors@R: person("Dimitrios", "Zacharatos", email = "dimitrios@psycholate.com", role = c("aut", "cre"))
-Author: Kostas Maistrelis [aut,cre]
-	Dimitrios Zacharatos [aut,cre]
-Maintainer: Dimitrios Zacharatos <dimitrios@psycholate.com>
+Authors@R: c(
+    person("Kostas", "Maistrelis", role = c("aut", "cre")),
+    person("Dimitrios", "Zacharatos", email = "dzacharatos@yahoo.com", role = c("aut", "cre"))
+    )
 URL: https://github.com/maisk/irtempirical, https://maisk.github.io/irtempirical/
 BugReports: https://github.com/maisk/irtempirical/issues
 Description:
