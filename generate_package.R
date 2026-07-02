@@ -17,5 +17,5 @@ library(irtempirical)
 help(package = "irtempirical")
 
 pkgdown::build_site(paste0(getwd()))
-system("R CMD Rd2pdf rwf --force")
-system("R CMD build rwf --resave-data")
+system("R CMD Rd2pdf irtempirical --force")
+system("R CMD build irtempirical --resave-data")
